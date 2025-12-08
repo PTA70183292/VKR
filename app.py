@@ -2,6 +2,7 @@ import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np
+import pandas as pd
 
 st.set_page_config(page_title="Анализ тональности")
 
@@ -23,8 +24,7 @@ def predict_sentiment(text, tokenizer, model):
     labels = {0: "Позитивный", 1: "Нейтральный", 2: "Негативный"}
     return labels[pred], probs[0].numpy()
 
-st.title("📊 Анализ тональности русских текстов")
-st.write("Классификация отзывов на позитивные, нейтральные и негативные")
+st.title("Анализ тональности русских текстов")
 
 try:
     tokenizer, model = load_model()
@@ -39,6 +39,18 @@ if st.button("Анализировать"):
     if text_input:
         with st.spinner("Анализ..."):
             sentiment, probs = predict_sentiment(text_input, tokenizer, model)
+            
             st.subheader(f"Результат: {sentiment}")
+            
+            df = pd.DataFrame({
+                'Класс': ['Позитивный', 'Нейтральный', 'Негативный'],
+                'Вероятность': probs
+            })
+            
+            st.bar_chart(df.set_index('Класс'))
+            
+            st.write("**Детальные вероятности:**")
+            for idx, row in df.iterrows():
+                st.write(f"{row['Класс']}: {row['Вероятность']:.2%}")
     else:
         st.warning("Пожалуйста, введите текст")
