@@ -22,35 +22,66 @@ def predict_sentiment(text, tokenizer, model):
         pred = torch.argmax(probs, dim=1).item()
     
     labels = {0: "Позитивный", 1: "Нейтральный", 2: "Негативный"}
+
     return labels[pred], probs[0].numpy()
 
-st.title("Анализ тональности русских текстов")
+st.title("Анализ тональности")
 
 try:
     tokenizer, model = load_model()
-    st.success("Модель загружена")
-except:
-    st.error("Модель не найдена. Убедитесь, что модель обучена.")
+    st.success("Модель успешно загружена")
+except Exception as e:
+    st.error(f"Ошибка загрузки модели: {e}")
     st.stop()
 
-text_input = st.text_area("Введите текст для анализа:", height=150)
+col1, col2 = st.columns([2, 1])
 
-if st.button("Анализировать"):
+with col1:
+    text_input = st.text_area("Введите текст для анализа:", height=200, 
+                              placeholder="Например: Отличный продукт, очень доволен покупкой!")
+
+with col2:
+    st.markdown("**Примеры для тестирования:**")
+    examples = {
+        "Позитивный": "Прекрасный отель, отличный сервис и замечательный персонал!",
+        "Нейтральный": "Обычный отель, ничего особенного. Цена соответствует качеству.",
+        "Негативный": "Ужасное обслуживание, грязные номера, не рекомендую никому."
+    }
+    
+    for label, text in examples.items():
+        if st.button(f"{label}", key=label):
+            text_input = text
+            st.rerun()
+
+if st.button("Анализировать", type="primary"):
     if text_input:
-        with st.spinner("Анализ..."):
-            sentiment, probs = predict_sentiment(text_input, tokenizer, model)
+        with st.spinner("Выполняется анализ..."):
+            sentiment, probs, emoji = predict_sentiment(text_input, tokenizer, model)
             
-            st.subheader(f"Результат: {sentiment}")
+            st.markdown("---")
+            st.subheader(f"{emoji} Результат: **{sentiment}**")
             
-            df = pd.DataFrame({
-                'Класс': ['Позитивный', 'Нейтральный', 'Негативный'],
-                'Вероятность': probs
-            })
+            col1, col2 = st.columns(2)
             
-            st.bar_chart(df.set_index('Класс'))
+            with col1:
+                st.markdown("##### Распределение вероятностей")
+                df = pd.DataFrame({
+                    'Класс': ['Позитивный', 'Нейтральный', 'Негативный'],
+                    'Вероятность': probs
+                })
+                st.bar_chart(df.set_index('Класс'))
             
-            st.write("**Детальные вероятности:**")
-            for idx, row in df.iterrows():
-                st.write(f"{row['Класс']}: {row['Вероятность']:.2%}")
+            with col2:
+                st.markdown("##### Детальные значения")
+                for idx, row in df.iterrows():
+                    percentage = row['Вероятность'] * 100
+                    st.metric(label=row['Класс'], value=f"{percentage:.2f}%")
     else:
-        st.warning("Пожалуйста, введите текст")
+        st.warning("Bведите текст для анализа")
+
+st.markdown("---")
+st.markdown("""
+<div style='text-align: center'>
+    <small>Модель: BERT Multilingual (8-bit) + QLoRA | Датасет: ru_sentiment_dataset</small>
+</div>
+""", unsafe_allow_html=True)
