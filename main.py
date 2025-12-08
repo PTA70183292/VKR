@@ -11,7 +11,7 @@ class PredictResponse(BaseModel):
 
 app = FastAPI()
 
-MODEL_NAME = "DeepPavlov/distilrubert-base-cased-conversational"
+MODEL_NAME = "talgat/bert-multilingual-sentiment-qlora"  
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -32,4 +32,3 @@ clf = pipeline(
 def predict(req: PredictRequest):
     result = clf(req.text)[0]
     return PredictResponse(label=result["label"], score=float(result["score"]))
-
