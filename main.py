@@ -15,7 +15,9 @@ app = FastAPI(
 
 @app.on_event("startup")
 def startup_event():
+    """Инициализация БД при старте приложения"""
     init_db()
+    # Предзагрузка модели
     get_sentiment_model()
 
 @app.post("/predict", response_model=PredictResponse)
@@ -24,6 +26,8 @@ def predict(
     db: Session = Depends(get_db),
     model: SentimentModel = Depends(get_sentiment_model)
 ):
+    """Предсказание sentiment и сохранение в БД"""
+    # Получаем предсказание от модели
     result = model.predict(req.text)
     
     # Сохраняем в базу данных
@@ -44,6 +48,7 @@ def get_user_predictions(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
+    """Получение всех предсказаний для конкретного пользователя"""
     predictions = crud.get_predictions_by_user(
         db=db,
         user_id=user_id,
@@ -57,6 +62,7 @@ def get_prediction(
     prediction_id: int,
     db: Session = Depends(get_db)
 ):
+    """Получение конкретного предсказания по ID"""
     prediction = crud.get_prediction_by_id(db=db, prediction_id=prediction_id)
     if prediction is None:
         raise HTTPException(status_code=404, detail="Prediction not found")
@@ -68,11 +74,13 @@ def get_all_predictions(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
+    """Получение всех предсказаний"""
     predictions = crud.get_all_predictions(db=db, skip=skip, limit=limit)
     return predictions
 
 @app.get("/health")
 def health_check():
+    """Проверка здоровья приложения"""
     return {"status": "ok"}
 
 if __name__ == "__main__":

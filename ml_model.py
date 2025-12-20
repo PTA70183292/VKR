@@ -23,7 +23,6 @@ class SentimentModel:
             "score": float(result["score"])
         }
 
-# Глобальный экземпляр модели (загружается один раз при старте)
 sentiment_model = None
 
 def get_sentiment_model() -> SentimentModel:
