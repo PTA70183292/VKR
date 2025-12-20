@@ -5,15 +5,12 @@ import uuid
 
 st.set_page_config(page_title="Анализ тональности")
 
-# Конфигурация API
 API_URL = "http://localhost:8000"
 
-# Инициализация session state для user_id
 if 'user_id' not in st.session_state:
     st.session_state.user_id = str(uuid.uuid4())
 
 def check_api_health():
-    """Проверка доступности API"""
     try:
         response = requests.get(f"{API_URL}/health", timeout=2)
         return response.status_code == 200
@@ -21,7 +18,6 @@ def check_api_health():
         return False
 
 def predict_sentiment(text: str, user_id: str):
-    """Отправка запроса к API для предсказания"""
     try:
         response = requests.post(
             f"{API_URL}/predict",
@@ -35,7 +31,6 @@ def predict_sentiment(text: str, user_id: str):
         return None
 
 def get_user_history(user_id: str, limit: int = 10):
-    """Получение истории предсказаний пользователя"""
     try:
         response = requests.get(
             f"{API_URL}/predictions/user/{user_id}",
@@ -48,7 +43,6 @@ def get_user_history(user_id: str, limit: int = 10):
         return []
 
 def map_label_to_russian(label: str) -> tuple:
-    """Маппинг английских меток на русские с эмодзи"""
     mapping = {
         "LABEL_0": ("Позитивный", "😊"),
         "LABEL_1": ("Нейтральный", "😐"),
@@ -59,26 +53,23 @@ def map_label_to_russian(label: str) -> tuple:
     }
     return mapping.get(label, (label, "❓"))
 
-# Заголовок
-st.title("🎭 Анализ тональности текста")
+st.title("Анализ тональности текста")
 
-# Проверка API
 with st.spinner("Проверка подключения к API..."):
     api_status = check_api_health()
 
 if api_status:
-    st.success("✅ API доступен")
+    st.success("API доступен")
 else:
-    st.error("❌ API недоступен. Убедитесь, что FastAPI сервер запущен на http://localhost:8000")
+    st.error("API недоступен. Убедитесь, что FastAPI сервер запущен на http://localhost:8000")
     st.stop()
 
-# Sidebar с настройками
 with st.sidebar:
-    st.header("⚙️ Настройки")
+    st.header("Настройки")
     st.text_input("User ID", value=st.session_state.user_id, disabled=True, 
                   help="Уникальный идентификатор пользователя")
     
-    if st.button("🔄 Сгенерировать новый ID"):
+    if st.button("Сгенерировать новый ID"):
         st.session_state.user_id = str(uuid.uuid4())
         st.rerun()
     
@@ -88,12 +79,10 @@ with st.sidebar:
     
     show_history = st.checkbox("Показать историю", value=True)
 
-# Основной контент
 col1, col2 = st.columns([2, 1])
 
 with col1:
     text_input = st.text_area(
-        "Введите текст для анализа:", 
         height=200,
         placeholder="Например: Отличный продукт, очень доволен покупкой!",
         key="text_input"
@@ -108,12 +97,11 @@ with col2:
     }
     
     for label, text in examples.items():
-        if st.button(f"📝 {label}", key=f"btn_{label}"):
+        if st.button(f"{label}", key=f"btn_{label}"):
             st.session_state.text_input = text
             st.rerun()
 
-# Кнопка анализа
-if st.button("🔍 Анализировать", type="primary", use_container_width=True):
+if st.button("Анализировать", type="primary", use_container_width=True):
     if text_input:
         with st.spinner("Выполняется анализ..."):
             result = predict_sentiment(text_input, st.session_state.user_id)
@@ -140,23 +128,20 @@ if st.button("🔍 Анализировать", type="primary", use_container_wi
                     **Время:** {result['created_at'][:19]}
                     """)
                 
-                # Детальная информация
                 with st.expander("📊 Подробная информация"):
                     st.json(result)
     else:
-        st.warning("⚠️ Введите текст для анализа")
+        st.warning("Введите текст для анализа")
 
-# История предсказаний
 if show_history:
     st.markdown("---")
-    st.subheader("📜 История предсказаний")
+    st.subheader("История предсказаний")
     
     history = get_user_history(st.session_state.user_id, limit=10)
     
     if history:
         df_history = pd.DataFrame(history)
         
-        # Добавляем русские метки
         df_history['sentiment_ru'] = df_history['label'].apply(
             lambda x: map_label_to_russian(x)[0]
         )
@@ -164,7 +149,6 @@ if show_history:
             lambda x: map_label_to_russian(x)[1]
         )
         
-        # Форматирование для отображения
         display_df = df_history[['id', 'emoji', 'sentiment_ru', 'score', 'text', 'created_at']].copy()
         display_df['score'] = display_df['score'].apply(lambda x: f"{x*100:.2f}%")
         display_df['text'] = display_df['text'].apply(lambda x: x[:50] + '...' if len(x) > 50 else x)
@@ -172,7 +156,6 @@ if show_history:
         
         st.dataframe(display_df, use_container_width=True, hide_index=True)
         
-        # Статистика
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -189,7 +172,6 @@ if show_history:
     else:
         st.info("История пуста. Выполните анализ текста, чтобы увидеть результаты здесь.")
 
-# Футер
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center'>
