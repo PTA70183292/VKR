@@ -137,7 +137,7 @@ with st.sidebar:
         st.error("❌ Не подключено")
     
     st.markdown("---")
-    st.text_input("User ID", value=st.session_state.user_id, disabled=True)
+    st.text_input("ID пользователя", value=st.session_state.user_id, disabled=True)
     
     if st.button("🔄 Новый ID"):
         st.session_state.user_id = str(uuid.uuid4())
@@ -191,7 +191,7 @@ if page == "Анализ текста":
                     with col1:
                         st.markdown("##### Уверенность модели")
                         st.progress(score)
-                        st.metric(label="Confidence Score", value=f"{score*100:.2f}%")
+                        st.metric(label="Уровень уверенности", value=f"{score*100:.2f}%")
                     
                     with col2:
                         st.markdown("##### Информация о предсказании")
