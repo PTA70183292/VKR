@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 from config import settings
 
 class SentimentModel:
-    def __init__(self):
+     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(settings.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(
             settings.model_name,
@@ -16,7 +16,7 @@ class SentimentModel:
             return_all_scores=False
         )
     
-    def predict(self, text: str) -> dict:
+     def predict(self, text: str) -> dict:
         result = self.clf(text)[0]
         return {
             "label": result["label"],
