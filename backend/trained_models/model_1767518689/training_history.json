@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2026-01-04T09:41:50.771260",
+    "num_epochs": 2,
+    "batch_size": 8,
+    "learning_rate": 0.0002,
+    "train_loss": 1.1088333333333333,
+    "train_samples": 24000,
+    "eval_samples": 6000
+  }
+]

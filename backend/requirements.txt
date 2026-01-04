@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pydantic-settings
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pandas
+torch
+transformers
+bitsandbytes
+accelerate
+peft
+datasets
