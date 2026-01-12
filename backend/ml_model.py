@@ -51,7 +51,7 @@ class SentimentModel:
         """
         # 1. Определяем целевое имя адаптера
         # Если пришло None, "Default" или пустая строка -> используем "default"
-        switch_modeltarget_adapter = "default"
+        target_adapter = "default"
         if model_name and model_name not in ["Default", "Base", "default"]:
             target_adapter = model_name
 
