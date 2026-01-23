@@ -42,7 +42,6 @@ def create_ticket(
     db_ticket = Ticket(
         user_email=user_email,
         subject=subject,
-        # ВАЖНО: В models.py поле называется 'description', поэтому пишем description
         # Слева - имя колонки в БД, Справа - переменная с данными
         description=description,  
         label=label,
