@@ -1,16 +1,19 @@
-fastapi
-uvicorn[standard]
-python-multipart
-pydantic
-pydantic-settings
-sqlalchemy
-psycopg2-binary
-python-dotenv
-pandas
-torch
-transformers
-bitsandbytes
-accelerate
-peft
-datasets
-pytest
+fastapi                   # Основной веб-фреймворк для создания API
+uvicorn[standard]         # ASGI-сервер для запуска FastAPI (standard включает uvloop для скорости)
+python-multipart          # Необходим для обработки форм (загрузка файлов, OAuth2 авторизация)
+pydantic                  # Библиотека для валидации данных и описания схем (Schemas)
+pydantic-settings         # Расширение для управления настройками (чтение .env), требуется для Pydantic V2
+sqlalchemy                # ORM для работы с базой данных (создание сессий, запросы)
+psycopg2-binary           # Драйвер для подключения к PostgreSQL (binary версия удобна, не требует компиляции)
+python-dotenv             # Загрузка переменных окружения из файла .env
+pandas                    # Обработка табличных данных (CSV датасеты, логи обучения)
+torch                     # PyTorch: основной движок для нейросетей (тензоры, GPU вычисления)
+transformers              # Библиотека Hugging Face для работы с моделями BERT/RuBERT
+bitsandbytes              # Библиотека для 8-битной квантованизации (экономит память GPU)
+accelerate                # Помогает эффективно использовать GPU и распределять нагрузку при обучении
+peft                      # Parameter-Efficient Fine-Tuning: работа с адаптерами (LoRA), чтобы не обучать всю модель
+datasets                  # Удобная работа с форматами датасетов от Hugging Face
+pytest                    # Фреймворк для запуска автотестов
+passlib==1.7.4            # Хеширование паролей (используется вместе с bcrypt)
+bcrypt==3.2.2             # Алгоритм хеширования (версия зафиксирована для стабильности)
+python-jose[cryptography] # Работа с JWT токенами (создание, подпись, проверка)
