@@ -16,7 +16,7 @@ COPY requirements.txt .
 
 # 3. Устанавливаем зависимости с увеличенным тайм-аутом (чтобы torch не обрывался)
 # Флаг --no-cache-dir экономит место в образе
-RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
+RUN pip install --default-timeout=1000 -r requirements.txt
 
 COPY . .
 
